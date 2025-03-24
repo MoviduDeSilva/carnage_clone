@@ -4,117 +4,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import { Filter, X, ChevronDown, ChevronUp } from "lucide-react";
-
-// Sample product data
-const allProducts = [
-  {
-    id: 1,
-    name: "Classic Black Tee",
-    price: 2900,
-    category: "T-Shirts",
-    images: [
-      "https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80",
-      "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
-    ],
-    isNew: true,
-    isBestSeller: false,
-    path: "/product/classic-black-tee"
-  },
-  {
-    id: 2,
-    name: "Urban Streetwear Hoodie",
-    price: 5900,
-    category: "Hoodies",
-    images: [
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: false,
-    isBestSeller: true,
-    path: "/product/urban-streetwear-hoodie"
-  },
-  {
-    id: 3,
-    name: "Minimalist Logo Cap",
-    price: 2200,
-    category: "Accessories",
-    images: [
-      "https://images.unsplash.com/photo-1556306535-0f09a537f0a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-      "https://images.unsplash.com/photo-1534215754734-18e55d13e346?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1978&q=80"
-    ],
-    isNew: true,
-    isBestSeller: false,
-    path: "/product/minimalist-logo-cap"
-  },
-  {
-    id: 4,
-    name: "Distressed Cargo Pants",
-    price: 4900,
-    category: "Pants",
-    images: [
-      "https://images.unsplash.com/photo-1542272604-787c3835535d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2026&q=80",
-      "https://images.unsplash.com/photo-1584865288642-42078afe6942?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1960&q=80"
-    ],
-    isNew: false,
-    isBestSeller: true,
-    path: "/product/distressed-cargo-pants"
-  },
-  {
-    id: 5,
-    name: "Graphic Print Tee",
-    price: 3200,
-    category: "T-Shirts",
-    images: [
-      "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: true,
-    isBestSeller: false,
-    path: "/product/graphic-print-tee"
-  },
-  {
-    id: 6,
-    name: "Leather Biker Jacket",
-    price: 12900,
-    category: "Jackets",
-    images: [
-      "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1605908502724-9093a79a1b39?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: false,
-    isBestSeller: true,
-    path: "/product/leather-biker-jacket"
-  },
-  {
-    id: 7,
-    name: "Chain Necklace",
-    price: 1800,
-    category: "Accessories",
-    images: [
-      "https://images.unsplash.com/photo-1589128777073-263566ae5e4d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1600721391690-0e9a296db29c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: true,
-    isBestSeller: false,
-    path: "/product/chain-necklace"
-  },
-  {
-    id: 8,
-    name: "Relaxed Fit Shorts",
-    price: 3500,
-    category: "Shorts",
-    images: [
-      "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1560060141-7b9018741ced?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: false,
-    isBestSeller: false,
-    path: "/product/relaxed-fit-shorts"
-  }
-];
+import { productsData } from "@/data/products";
 
 const Shop = () => {
-  const [products, setProducts] = useState(allProducts);
+  const [products, setProducts] = useState(productsData);
   const [filters, setFilters] = useState({
     categories: [],
     price: { min: 0, max: 15000 },
@@ -127,11 +20,11 @@ const Shop = () => {
   });
   
   // Get unique categories
-  const categories = [...new Set(allProducts.map(product => product.category))];
+  const categories = [...new Set(productsData.map(product => product.category))];
   
   // Apply filters
   useEffect(() => {
-    let filteredProducts = [...allProducts];
+    let filteredProducts = [...productsData];
     
     // Filter by category if there are selected categories
     if (filters.categories.length > 0) {
@@ -313,7 +206,7 @@ const Shop = () => {
             <div className="flex-1">
               <div className="flex items-center justify-between mb-8">
                 <p className="text-sm text-muted-foreground">
-                  Showing {products.length} of {allProducts.length} products
+                  Showing {products.length} of {productsData.length} products
                 </p>
                 <div className="flex items-center space-x-2">
                   <label htmlFor="sort" className="text-sm">Sort by:</label>

@@ -2,17 +2,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  images: string[];
-  isNew?: boolean;
-  isBestSeller?: boolean;
-  path: string;
-}
+import { useCart } from "@/contexts/CartContext";
+import { toast } from "@/hooks/use-toast";
+import { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
@@ -24,6 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   
   const { name, price, images, isNew, isBestSeller, path } = product;
+  const { addToCart } = useCart();
   
   const handlePrevImage = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -41,6 +34,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     return (price / 100).toLocaleString("en-US", {
       style: "currency",
       currency: "USD",
+    });
+  };
+  
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Default size and color (first available)
+    const defaultSize = product.sizes ? product.sizes[0] : undefined;
+    const defaultColor = product.colors ? product.colors[0] : undefined;
+    
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      size: defaultSize,
+      color: defaultColor
+    });
+    
+    toast({
+      title: "Added to cart",
+      description: `${product.name} added to your cart`,
+      variant: "default"
     });
   };
   
@@ -94,12 +111,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           >
             <button 
               className="w-full flex items-center justify-center space-x-2 bg-black text-white p-2 hover:opacity-80 transition-opacity"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log("Quick add to cart:", product.id);
-                // Add to cart logic
-              }}
+              onClick={handleQuickAdd}
             >
               <ShoppingBag size={16} />
               <span>Quick Add</span>

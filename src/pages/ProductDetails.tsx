@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { 
@@ -16,85 +16,13 @@ import {
   ArrowLeft
 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
-
-// Sample product data - in a real app this would come from an API
-const productData = {
-  id: 1,
-  name: "Classic Black Tee",
-  price: 2900,
-  sizes: ["S", "M", "L", "XL"],
-  colors: ["Black", "White", "Gray"],
-  description: "Our Classic Black Tee is the perfect addition to any wardrobe. Made from premium 100% cotton, this shirt offers both comfort and style. The minimalist design features a subtle embroidered logo on the chest, making it versatile for any occasion. Pair it with jeans for a casual look or layer it under a blazer for a more polished style.",
-  details: [
-    "100% premium combed cotton",
-    "180 GSM fabric weight",
-    "Pre-shrunk to minimize shrinkage",
-    "Reinforced collar and shoulders",
-    "Ethically manufactured"
-  ],
-  care: "Machine wash cold with similar colors. Tumble dry low. Do not iron design. Do not bleach.",
-  images: [
-    "https://images.unsplash.com/photo-1527719327859-c6ce80353573?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1964&q=80",
-    "https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
-    "https://images.unsplash.com/photo-1503341455253-b2cd22b5ce55?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
-    "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80"
-  ],
-  category: "T-Shirts",
-  sku: "BLK-TS-001",
-  isNew: true,
-  stock: {
-    "S": { "Black": 10, "White": 8, "Gray": 5 },
-    "M": { "Black": 15, "White": 12, "Gray": 7 },
-    "L": { "Black": 8, "White": 6, "Gray": 3 },
-    "XL": { "Black": 6, "White": 4, "Gray": 2 }
-  }
-};
-
-// Related products
-const relatedProducts = [
-  {
-    id: 2,
-    name: "Urban Streetwear Hoodie",
-    price: 5900,
-    category: "Hoodies",
-    images: [
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1509942774463-acf339cf87d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: false,
-    isBestSeller: true,
-    path: "/product/urban-streetwear-hoodie"
-  },
-  {
-    id: 5,
-    name: "Graphic Print Tee",
-    price: 3200,
-    category: "T-Shirts",
-    images: [
-      "https://images.unsplash.com/photo-1576871337622-98d48d1cf531?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80",
-      "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: true,
-    isBestSeller: false,
-    path: "/product/graphic-print-tee"
-  },
-  {
-    id: 8,
-    name: "Relaxed Fit Shorts",
-    price: 3500,
-    category: "Shorts",
-    images: [
-      "https://images.unsplash.com/photo-1591195853828-11db59a44f6b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-      "https://images.unsplash.com/photo-1560060141-7b9018741ced?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
-    ],
-    isNew: false,
-    isBestSeller: false,
-    path: "/product/relaxed-fit-shorts"
-  }
-];
+import { useCart } from "@/contexts/CartContext";
+import { productsData } from "@/data/products";
+import { toast } from "@/hooks/use-toast";
 
 const ProductDetails = () => {
   const { productId } = useParams<{ productId: string }>();
+  const navigate = useNavigate();
   const [currentImage, setCurrentImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -102,6 +30,16 @@ const ProductDetails = () => {
   const [activeTab, setActiveTab] = useState("description");
   const [addedToCart, setAddedToCart] = useState(false);
   const [wishlistAdded, setWishlistAdded] = useState(false);
+  
+  const { addToCart } = useCart();
+  
+  // Find the product based on the URL path
+  const productData = productsData.find(p => p.path === `/product/${productId}`) || productsData[0];
+  
+  // Get related products (excluding current product)
+  const relatedProducts = productsData
+    .filter(p => p.category === productData.category && p.id !== productData.id)
+    .slice(0, 4);
   
   // Handle size selection
   const handleSizeSelect = (size: string) => {
@@ -115,12 +53,12 @@ const ProductDetails = () => {
   
   // Check if color is available for selected size
   const isColorAvailableForSize = (size: string, color: string) => {
-    return productData.stock[size as keyof typeof productData.stock]?.[color as keyof typeof productData.stock[keyof typeof productData.stock]] > 0;
+    return productData.stock?.[size as keyof typeof productData.stock]?.[color as keyof typeof productData.stock[keyof typeof productData.stock]] > 0;
   };
   
   // Get available colors for selected size
   const getAvailableColors = () => {
-    if (!selectedSize) return productData.colors;
+    if (!selectedSize || !productData.colors) return productData.colors || [];
     
     return productData.colors.filter(color => 
       isColorAvailableForSize(selectedSize, color)
@@ -137,7 +75,7 @@ const ProductDetails = () => {
   
   // Check if product is in stock
   const isInStock = () => {
-    if (!selectedSize || !selectedColor) return false;
+    if (!selectedSize || !selectedColor || !productData.stock) return false;
     
     const stock = productData.stock[selectedSize as keyof typeof productData.stock]?.[selectedColor as keyof typeof productData.stock[keyof typeof productData.stock]];
     return stock && stock >= quantity;
@@ -145,7 +83,7 @@ const ProductDetails = () => {
   
   // Handle quantity change
   const increaseQuantity = () => {
-    if (selectedSize && selectedColor) {
+    if (selectedSize && selectedColor && productData.stock) {
       const stock = productData.stock[selectedSize as keyof typeof productData.stock]?.[selectedColor as keyof typeof productData.stock[keyof typeof productData.stock]];
       if (stock && quantity < stock) {
         setQuantity(prev => prev + 1);
@@ -164,16 +102,22 @@ const ProductDetails = () => {
   // Handle add to cart
   const handleAddToCart = () => {
     if (isInStock()) {
-      console.log("Adding to cart:", {
-        productId: productData.id,
+      addToCart({
+        id: productData.id,
         name: productData.name,
         price: productData.price,
+        image: productData.images[0],
         size: selectedSize,
-        color: selectedColor,
-        quantity
-      });
+        color: selectedColor
+      }, quantity);
       
       setAddedToCart(true);
+      
+      toast({
+        title: "Added to cart",
+        description: `${quantity} × ${productData.name} (${selectedSize}, ${selectedColor}) added to your cart`,
+        variant: "default"
+      });
       
       // Reset after 3 seconds
       setTimeout(() => {
@@ -185,12 +129,20 @@ const ProductDetails = () => {
   // Handle add to wishlist
   const toggleWishlist = () => {
     setWishlistAdded(!wishlistAdded);
+    
+    toast({
+      title: wishlistAdded ? "Removed from wishlist" : "Added to wishlist",
+      description: wishlistAdded ? 
+        `${productData.name} removed from your wishlist` : 
+        `${productData.name} added to your wishlist`,
+      variant: "default"
+    });
   };
   
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+  }, [productId]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -217,10 +169,13 @@ const ProductDetails = () => {
           
           {/* Back button - Mobile only */}
           <div className="mb-6 md:hidden">
-            <Link to="/shop" className="inline-flex items-center text-sm font-medium">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="inline-flex items-center text-sm font-medium"
+            >
               <ArrowLeft size={16} className="mr-1" />
-              Back to Shop
-            </Link>
+              Back
+            </button>
           </div>
           
           {/* Product Details */}
@@ -292,61 +247,67 @@ const ProductDetails = () => {
               <p className="text-2xl mb-4">{formatPrice(productData.price)}</p>
               
               {/* Product SKU */}
-              <p className="text-sm text-muted-foreground mb-6">SKU: {productData.sku}</p>
+              {productData.sku && (
+                <p className="text-sm text-muted-foreground mb-6">SKU: {productData.sku}</p>
+              )}
               
               {/* Size selection */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium">Size</label>
-                  <button className="text-xs text-muted-foreground underline">Size Guide</button>
+              {productData.sizes && productData.sizes.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-sm font-medium">Size</label>
+                    <button className="text-xs text-muted-foreground underline">Size Guide</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {productData.sizes.map(size => (
+                      <button
+                        key={size}
+                        onClick={() => handleSizeSelect(size)}
+                        className={`min-w-[3rem] h-10 px-3 border transition-colors ${
+                          selectedSize === size
+                            ? "border-black bg-black text-white"
+                            : "border-gray-300 hover:border-gray-400 text-foreground"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                  {!selectedSize && (
+                    <p className="text-sm text-muted-foreground mt-2">Please select a size</p>
+                  )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {productData.sizes.map(size => (
-                    <button
-                      key={size}
-                      onClick={() => handleSizeSelect(size)}
-                      className={`min-w-[3rem] h-10 px-3 border transition-colors ${
-                        selectedSize === size
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 hover:border-gray-400 text-foreground"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-                {!selectedSize && (
-                  <p className="text-sm text-muted-foreground mt-2">Please select a size</p>
-                )}
-              </div>
+              )}
               
               {/* Color selection */}
-              <div className="mb-6">
-                <label className="text-sm font-medium block mb-2">Color</label>
-                <div className="flex flex-wrap gap-2">
-                  {getAvailableColors().map(color => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      disabled={selectedSize && !isColorAvailableForSize(selectedSize, color)}
-                      className={`min-w-[4.5rem] h-10 px-3 border transition-colors ${
-                        selectedColor === color
-                          ? "border-black bg-black text-white"
-                          : "border-gray-300 hover:border-gray-400 text-foreground"
-                      } ${
-                        selectedSize && !isColorAvailableForSize(selectedSize, color)
-                          ? "opacity-40 cursor-not-allowed hover:border-gray-300"
-                          : ""
-                      }`}
-                    >
-                      {color}
-                    </button>
-                  ))}
+              {productData.colors && productData.colors.length > 0 && (
+                <div className="mb-6">
+                  <label className="text-sm font-medium block mb-2">Color</label>
+                  <div className="flex flex-wrap gap-2">
+                    {getAvailableColors().map(color => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        disabled={selectedSize && !isColorAvailableForSize(selectedSize, color)}
+                        className={`min-w-[4.5rem] h-10 px-3 border transition-colors ${
+                          selectedColor === color
+                            ? "border-black bg-black text-white"
+                            : "border-gray-300 hover:border-gray-400 text-foreground"
+                        } ${
+                          selectedSize && !isColorAvailableForSize(selectedSize, color)
+                            ? "opacity-40 cursor-not-allowed hover:border-gray-300"
+                            : ""
+                        }`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                  {!selectedColor && selectedSize && (
+                    <p className="text-sm text-muted-foreground mt-2">Please select a color</p>
+                  )}
                 </div>
-                {!selectedColor && selectedSize && (
-                  <p className="text-sm text-muted-foreground mt-2">Please select a color</p>
-                )}
-              </div>
+              )}
               
               {/* Quantity */}
               <div className="mb-8">
@@ -453,7 +414,7 @@ const ProductDetails = () => {
                   {activeTab === "description" && (
                     <p className="text-muted-foreground">{productData.description}</p>
                   )}
-                  {activeTab === "details" && (
+                  {activeTab === "details" && productData.details && (
                     <ul className="text-muted-foreground space-y-2">
                       {productData.details.map((detail, index) => (
                         <li key={index} className="flex items-start">
